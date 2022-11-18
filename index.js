@@ -19,11 +19,18 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 function run() {
     try {
         const serviceCollection = client.db('adventure-zone-assignment').collection('tour-services')
+        
 
         // Service Api
         app.get('/services', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query).limit(3);
+            const services = await cursor.toArray();
+            res.send(services);
+        });
+        app.get('/services-page', async (req, res) => {
+            const query = {};
+            const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
         });
@@ -34,6 +41,12 @@ function run() {
             const service = await serviceCollection.findOne(query)
             res.send(service)
         })
+        // Add Services Api
+            app.post('/service-add', async(req, res) =>{
+                const addService = req.body;
+                const result = await serviceCollection.insertOne(addService);
+                res.send(result)
+            })
 
         // Review Api
 
